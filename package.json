@@ -1,0 +1,23 @@
+{
+  "name": "natours",
+  "version": "1.0.0",
+  "description": "Learning node, express and mongoDB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dulanjanabandara/natours.git"
+  },
+  "author": "Dulanjana Bandara",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dulanjanabandara/natours/issues"
+  },
+  "homepage": "https://github.com/dulanjanabandara/natours#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "nodemon": "^2.0.15"
+  }
+}

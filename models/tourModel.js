@@ -53,6 +53,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false, // removes the field in the query results from the schema level. Then, no need to filter when quering.
   },
   startDates: [Date],
 });

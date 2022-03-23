@@ -9,6 +9,9 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: {
+      type: String,
+    },
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -58,8 +61,9 @@ const tourSchema = new mongoose.Schema(
       select: false, // removes the field in the query results from the schema level. Then, no need to filter when quering.
     },
     startDates: [Date],
-    slug: {
-      type: String,
+    secretTour: {
+      type: Boolean,
+      default: false,
     },
   },
   {
@@ -80,7 +84,8 @@ tourSchema.virtual('durationWeeks').get(function () {
 // 3. Aggregate
 // 4. Model
 
-// pre - a DOCUMENT MIDDLEWARE. Runs before .save() and .create()
+// 1. Document Middleware
+// pre - a DOCUMENT MIDDLEWARE. This save middleware runs before .save() and .create() only!
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
@@ -89,6 +94,22 @@ tourSchema.pre('save', function (next) {
 // post middleware. This has the saved document as a parameter (doc).
 // tourSchema.post('save', (doc, next) => {
 //   console.log(doc);
+//   next();
+// });
+
+// 2. Query Middleware
+// this - refers to a query object. So we can chain all of the methods that we have for queries.
+// tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+// tourSchema.post(/^find/, (docs, next) => {
+//   console.log(`Query took ${Date.now() - this.start} milliseconds!`);
+//   console.log(docs);
 //   next();
 // });
 

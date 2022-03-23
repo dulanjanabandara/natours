@@ -52,6 +52,14 @@ const tourSchema = new mongoose.Schema(
     },
     priceDiscount: {
       type: Number,
+      validate: {
+        // val is the priceDiscount value
+        validator: function (val) {
+          // "this" only points to current doc on NEW DOCUMENT CREATION!
+          return val < this.price;
+        },
+        message: 'Discount price ({VALUE}) should be below the regular price',
+      },
     },
     summary: {
       type: String,
@@ -99,7 +107,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 // 4. Model
 
 // 1. Document Middleware
-// pre - a DOCUMENT MIDDLEWARE. This save middleware runs before .save() and .create() only!
+// pre - a DOCUMENT MIDDLEWARE. This save middleware runs before .save() and .create() only! not works for update()!
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();

@@ -81,7 +81,7 @@ tourSchema.virtual('durationWeeks').get(function () {
 // There are 4 types of middleware in mongoose,
 // 1. Document - Can act only on currently processing document
 // 2. Query
-// 3. Aggregate
+// 3. Aggregation
 // 4. Model
 
 // 1. Document Middleware
@@ -112,6 +112,13 @@ tourSchema.pre(/^find/, function (next) {
 //   console.log(docs);
 //   next();
 // });
+
+// 3. Aggregation Middleware
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  console.log(this.pipeline());
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 

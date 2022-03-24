@@ -21,7 +21,7 @@ const sendErrorProd = (err, res) => {
       message: err.message,
     });
   } else {
-    console.err('ERROR: ', err);
+    console.error('ERROR: ', err);
 
     res.status(500).json({
       status: 'error',
@@ -38,7 +38,6 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
-    console.log(error)
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
 

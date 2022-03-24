@@ -23,8 +23,19 @@ mongoose
   .then(() => {
     console.log('DB connection successfully established...');
   });
+// Below catch block was added to unhandled promise rejection handle. But I've implemented a global way to handle promise rejections. That's why below line is commented!
+// .catch((err) => console.log('ERROR'));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
+});
+
+// Handling unhandled promise rejections
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('Unhandled Rejection..! Shutting down...');
+  server.close(() => {
+    process.exit(1);
+  });
 });

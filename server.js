@@ -1,6 +1,16 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+// Handling uncaught exceptions
+// All errors occured on synchronous code and not handled are called, uncaught exceptions.
+process.on('uncaughtException', (err) => {
+  console.log('Uncaught Exception..! Shutting down...');
+  console.log(err.name, err.message);
+
+  // Really really need to crash the application as after the uncaught exception, the applications is in unclean state!
+  process.exit(1);
+});
+
 dotenv.config({ path: './config.env' });
 const app = require('./app');
 
@@ -32,10 +42,13 @@ const server = app.listen(port, () => {
 });
 
 // Handling unhandled promise rejections
+// subscribing to unhandled rejection event emitted by the process object using .on() method. Basically we're listening to an event!
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
   console.log('Unhandled Rejection..! Shutting down...');
   server.close(() => {
+    // Crashing the application
+    // Here crashing is optional is unhandled rejection.
     process.exit(1);
   });
 });

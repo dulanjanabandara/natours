@@ -14,6 +14,13 @@ const handleDupicateFieldsDB = (err) => {
   return new AppError(message, 404);
 };
 
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -30,7 +37,7 @@ const sendErrorProd = (err, res) => {
       message: err.message,
     });
   } else {
-    console.error('ERROR: ', err);
+    // console.error('ERROR: ', err);
 
     res.status(500).json({
       status: 'error',
@@ -50,6 +57,11 @@ module.exports = (err, req, res, next) => {
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDupicateFieldsDB(error);
+    if (error._message === 'Validation failed')
+      error = handleValidationErrorDB(error);
+    // This was the original version of above operation. But I had to change as error.name gave "undefined".
+    // if (error.name === 'ValidationError')
+    //   error = handleValidationErrorDB(error);
 
     sendErrorProd(error, res);
   }

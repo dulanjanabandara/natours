@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,6 +29,14 @@ const userSchema = new mongoose.Schema(
     passwordConfirm: {
       type: String,
       required: [true, 'Please confirm your password!'],
+      validate: {
+        // This only works on CREATE and SAVE!!! Not going to work on UPDATE!!!
+        validator: function (el) {
+          // el is current element which is passwordConfirm
+          return el === this.password;
+        },
+        message: 'Passwords do not match!',
+      },
     },
     createdAt: {
       type: Date,
@@ -40,6 +49,19 @@ const userSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+
+userSchema.pre('save', async function (next) {
+  // Only run if the password is actually modified.
+  //this - refers to the current document.
+  if (!this.isModified('password')) return next();
+
+  // Hash the password with cost of 12
+  this.password = await bcrypt.hash(this.password, 12);
+
+  // Delete the password confirm field
+  this.passwordConfirm = undefined; // undefining is the way of deleting not persisted data fields in the database.
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 

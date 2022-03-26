@@ -44,11 +44,14 @@ const userSchema = new mongoose.Schema(
       default: Date.now(),
       select: false, // removes the field in the query results from the schema level. Then, no need to filter when quering.
     },
-  },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    passwordChangedAt: {
+      type: Date,
+    },
   }
+  // {
+  //   toJSON: { virtuals: true },
+  //   toObject: { virtuals: true },
+  // }
 );
 
 userSchema.pre('save', async function (next) {
@@ -70,6 +73,20 @@ userSchema.methods.correctPassword = async function (
   userPassword
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
+};
+
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    return JWTTimestamp < changedTimestamp;
+  }
+
+  // False means NOT CHANGED!
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);

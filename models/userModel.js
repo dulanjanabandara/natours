@@ -59,6 +59,11 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: {
       type: Date,
     },
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
   }
   // {
   //   toJSON: { virtuals: true },
@@ -83,6 +88,13 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000; // this 1s deduction always ensures that token always is created after the password has been changed. This is not 100% accurate but this is a smart hack and it makes no issues!
+  next();
+});
+
+// Query Middleware for select active users
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+
   next();
 });
 

@@ -94,7 +94,6 @@ userSchema.pre('save', function (next) {
 // Query Middleware for select active users
 userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
-
   next();
 });
 

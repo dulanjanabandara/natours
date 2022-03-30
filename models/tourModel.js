@@ -131,6 +131,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtually populating tour schema with tour reviews
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 // MIDDLEWARES
 // There are 4 types of middleware in mongoose,
 // 1. Document - Can act only on currently processing document

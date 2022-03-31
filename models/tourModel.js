@@ -126,12 +126,16 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+// tourSchema.index({ price: 1 }); // 1- sorting in ascending, -1 - sorting in descending
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+
 // VIRTUAL PROPERTIES
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-// Virtually populating tour schema with tour reviews
+// Virtually populating tour schema with tour reviews. Also you have to add populate method in the query in the handler function.
 tourSchema.virtual('reviews', {
   ref: 'Review',
   foreignField: 'tour',

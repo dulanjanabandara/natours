@@ -78,7 +78,8 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields()
       .paginate();
-    const docs = await features.query.explain();
+    const docs = await features.query;
+    // const docs = await features.query.explain(); // explain() was added to see the indexex reporting!
 
     res.status(200).json({
       status: 'success',

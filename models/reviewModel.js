@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Tour = require('./tourModel');
 
 const reviewSchema = new mongoose.Schema(
   {
@@ -48,6 +49,36 @@ reviewSchema.pre(/^find/, function (next) {
   });
 
   next();
+});
+
+// Static methods. These can be called on models directly.
+reviewSchema.statics.calcAverageRatings = async function (tourId) {
+  const stats = await this.aggregate([
+    // this refers to the model
+    {
+      $match: { $tour: tourId },
+    },
+    {
+      $group: {
+        _id: '$tour',
+        nRating: { $sum: 1 },
+        avgRating: { $avg: 'rating' },
+      },
+    },
+  ]);
+  console.log(stats);
+
+  Tour.findByIdAndUpdate(tourId, {
+    ratingsQuantity: stats[0].nRating,
+    ratingsAverage: stats[0].avgRating,
+  });
+};
+
+reviewSchema.post('save', function () {
+  // post middleware does not get access to 'next'.
+  // this points to current review
+  // Review.calcAverageRatings(this.tour); // This does not work as Review is not defined yet. So, we use below method.
+  this.constructor.calcAverageRatings(this.tour); // this is the current document and the constructor is basically the model who created that document.
 });
 
 const Review = mongoose.model('Review', reviewSchema);

@@ -130,6 +130,7 @@ const tourSchema = new mongoose.Schema(
 // tourSchema.index({ price: 1 }); // 1- sorting in ascending, -1 - sorting in descending
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 
 // VIRTUAL PROPERTIES
 tourSchema.virtual('durationWeeks').get(function () {

@@ -15,6 +15,23 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
+const scriptSrcUrls = [
+  'https://api.tiles.mapbox.com/',
+  'https://api.mapbox.com/',
+];
+const styleSrcUrls = [
+  'https://api.mapbox.com/',
+  'https://api.tiles.mapbox.com/',
+];
+const connectSrcUrls = [
+  'https://api.mapbox.com/',
+  'https://a.tiles.mapbox.com/',
+  'https://b.tiles.mapbox.com/',
+  'https://events.mapbox.com/',
+];
+
+const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+
 const app = express();
 
 app.set('view engine', 'pug');
@@ -26,7 +43,21 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP headers
-app.use(helmet());
+// app.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: ["'self'", 'blob:', 'data:'],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {

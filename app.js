@@ -15,24 +15,33 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const viewRouter = require('./routes/viewRoutes');
 
-const scriptSrcUrls = [
-  'https://api.tiles.mapbox.com/',
-  'https://api.mapbox.com/',
-];
-const styleSrcUrls = [
-  'https://api.mapbox.com/',
-  'https://api.tiles.mapbox.com/',
-];
-const connectSrcUrls = [
-  'https://api.mapbox.com/',
-  'https://a.tiles.mapbox.com/',
-  'https://b.tiles.mapbox.com/',
-  'https://events.mapbox.com/',
-];
+// const scriptSrcUrls = [
+//   'https://api.tiles.mapbox.com/',
+//   'https://api.mapbox.com/',
+// ];
+// const styleSrcUrls = [
+//   'https://api.mapbox.com/',
+//   'https://api.tiles.mapbox.com/',
+//   'https://fonts.googleapis.com/',
+// ];
+// const connectSrcUrls = [
+//   'https://api.mapbox.com/',
+//   'https://a.tiles.mapbox.com/',
+//   'https://b.tiles.mapbox.com/',
+//   'https://events.mapbox.com/',
+// ];
 
-const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+// const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; connect-src 'self' https://*.mapbox.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: ; script-src 'self' https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.js https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js blob: ; style-src 'self' 'unsafe-inline' https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.css https://fonts.googleapis.com;"
+  );
+  next();
+});
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -44,20 +53,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP headers
 // app.use(helmet());
-app.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: [],
-      connectSrc: ["'self'", ...connectSrcUrls],
-      scriptSrc: ["'self'", ...scriptSrcUrls],
-      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
-      workerSrc: ["'self'", 'blob:'],
-      objectSrc: [],
-      imgSrc: ["'self'", 'blob:', 'data:'],
-      fontSrc: ["'self'", ...fontSrcUrls],
-    },
-  })
-);
+// app.use(
+//   helmet.contentSecurityPolicy({
+//     directives: {
+//       defaultSrc: [],
+//       connectSrc: ["'self'", ...connectSrcUrls],
+//       scriptSrc: ["'self'", ...scriptSrcUrls],
+//       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+//       workerSrc: ["'self'", 'blob:'],
+//       objectSrc: [],
+//       imgSrc: ["'self'", 'blob:', 'data:'],
+//       fontSrc: ["'self'", ...fontSrcUrls],
+//     },
+//   })
+// );
 
 // Development logging
 if (process.env.NODE_ENV === 'development') {

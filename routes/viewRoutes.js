@@ -1,5 +1,6 @@
 const express = require('express');
 const viewsController = require('../controllers/viewsController');
+const authController = require('../controllers/authController');
 
 // const CSP = 'Content-Security-Policy';
 // const POLICY =
@@ -20,6 +21,8 @@ const router = express.Router();
 //   res.setHeader(CSP, POLICY);
 //   next();
 // });
+
+router.use(authController.isLoggedIn);
 
 router.get('/', viewsController.getOverview);
 router.get('/tour/:slug', viewsController.getTour);

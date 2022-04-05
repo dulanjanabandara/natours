@@ -6,6 +6,8 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
+// const cors = require('cors');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -35,13 +37,14 @@ const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.setHeader(
-    'Content-Security-Policy',
-    "default-src 'self'; connect-src 'self' https://*.mapbox.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: ; script-src 'self' https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.js https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js blob: ; style-src 'self' 'unsafe-inline' https://api.mapbox.com/mapbox-gl-js/v2.6.0/mapbox-gl.css https://fonts.googleapis.com;"
-  );
-  next();
-});
+// app.use(cors());
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     'Content-Security-Policy-Report-Only',
+//     "default-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data: ; script-src 'self' blob: ; style-src 'self' 'unsafe-inline' "
+//   );
+//   next();
+// });
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -53,6 +56,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Set security HTTP headers
 // app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
+
 // app.use(
 //   helmet.contentSecurityPolicy({
 //     directives: {
@@ -87,7 +92,7 @@ app.use(
     limit: '10kb',
   })
 );
-
+app.use(cookieParser());
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 
@@ -112,6 +117,7 @@ app.use(
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
+  console.log(req.cookies);
   next();
 });
 

@@ -92,7 +92,9 @@ app.use(
     limit: '10kb',
   })
 );
+app.use(express.urlencoded({ extended: true, limit: '10kb' })); // to handle form data as forms are submitted in urlencoded form.
 app.use(cookieParser());
+
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
 

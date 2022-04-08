@@ -108,3 +108,6 @@ dist
 
 # Config file
 config.env
+
+public/js/bundle.js
+public/js/bundle.js.map
